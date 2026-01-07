@@ -1,39 +1,31 @@
-const express = require("express");
-const app = express();
+<!DOCTYPE html>
+<html>
+<head>
+  <title>On-Demand Equipment</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: Arial; padding: 20px; background:#f5f5f5 }
+    h1 { color:#333 }
+    button { padding:10px; margin-top:10px }
+    pre { background:#000; color:#0f0; padding:10px }
+  </style>
+</head>
+<body>
 
-app.use(express.json());
+<h1>🚜 On-Demand Equipment Booking</h1>
 
-const equipment = [
-  { id: 1, name: "Excavator", ratePerHour: 2500 },
-  { id: 2, name: "Bulldozer", ratePerHour: 3000 },
-  { id: 3, name: "Crane", ratePerHour: 4000 }
-];
+<button onclick="load()">Load Equipment</button>
+<pre id="out">Click button</pre>
 
-app.get("/", (req, res) => {
-  res.send("On-Demand Equipment API is running 🚜");
-});
+<script>
+function load(){
+ fetch("https://on-demand-equipment.onrender.com/equipment")
+ .then(r=>r.json())
+ .then(d=>document.getElementById("out").textContent=
+   JSON.stringify(d,null,2)
+ )
+}
+</script>
 
-app.get("/equipment", (req, res) => {
-  res.json(equipment);
-});
-
-app.post("/quote", (req, res) => {
-  const { equipmentId, hours } = req.body;
-  const item = equipment.find(e => e.id === equipmentId);
-
-  if (!item) {
-    return res.status(404).json({ error: "Equipment not found" });
-  }
-
-  const total = item.ratePerHour * hours;
-  res.json({
-    equipment: item.name,
-    hours,
-    totalPrice: total
-  });
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+</body>
+</html>
