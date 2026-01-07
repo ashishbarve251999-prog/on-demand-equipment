@@ -1,52 +1,37 @@
 <script>
-const API_BASE = "https://on-demand-equipment.onrender.com";
+const equipmentData = [
+  { id: 1, name: "Excavator", ratePerHour: 2500 },
+  { id: 2, name: "Bulldozer", ratePerHour: 3000 },
+  { id: 3, name: "Crane", ratePerHour: 4000 }
+];
 
-async function loadEquipment() {
-  try {
-    const res = await fetch(`${API_BASE}/equipment`);
-    const data = await res.json();
+function loadEquipment() {
+  const select = document.getElementById("equipment");
+  select.innerHTML = "";
 
-    const select = document.getElementById("equipment");
-    select.innerHTML = '<option value="">-- Select Equipment --</option>';
-
-    data.forEach(item => {
-      const option = document.createElement("option");
-      option.value = item.id;
-      option.textContent = `${item.name} (₹${item.ratePerHour}/hr)`;
-      select.appendChild(option);
-    });
-
-  } catch (err) {
-    alert("Backend not reachable");
-    console.error(err);
-  }
+  equipmentData.forEach(item => {
+    const option = document.createElement("option");
+    option.value = item.id;
+    option.textContent = `${item.name} (₹${item.ratePerHour}/hr)`;
+    select.appendChild(option);
+  });
 }
 
-async function getQuote() {
-  const equipmentId = document.getElementById("equipment").value;
-  const hours = document.getElementById("hours").value;
-
-  if (!equipmentId) {
-    alert("Please select equipment");
-    return;
-  }
+function getQuote() {
+  const equipmentId = Number(document.getElementById("equipment").value);
+  const hours = Number(document.getElementById("hours").value);
 
   if (!hours || hours <= 0) {
-    alert("Enter valid hours");
+    alert("Please enter valid hours");
     return;
   }
 
-  const res = await fetch(`${API_BASE}/quote`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ equipmentId: Number(equipmentId), hours: Number(hours) })
-  });
+  const item = equipmentData.find(e => e.id === equipmentId);
+  const total = item.ratePerHour * hours;
 
-  const data = await res.json();
   document.getElementById("result").innerHTML =
-    `<strong>Total Price:</strong> ₹${data.totalPrice}`;
+    `💰 <strong>Total Price:</strong> ₹${total}`;
 }
 
-/* ✅ MOST IMPORTANT LINE */
-document.addEventListener("DOMContentLoaded", loadEquipment);
+loadEquipment();
 </script>
